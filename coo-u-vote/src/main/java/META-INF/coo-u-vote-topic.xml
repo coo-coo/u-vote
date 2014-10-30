@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ngbf resource="update">
+	<!-- 记录每一次POM版本的更新信息,POM每增一个版本,追加记录一个items(item*),author="拼音字母大写首字母SBQ|LQQ等" -->
+	<!-- since="每次版本,四位" update="更新事件,YYYY-MM-DD格式" -->
+	<!-- desc="更新描述" source="指明更新来自某应用驱动，应用为大写字母，参见NGBF应用支持管理" -->
+	<items author="SBQ" since="0.5.2.0" update="2014-08-04">
+		<item desc="创建文档" source="NGBF" />
+	</items>
+	<items author="SBQ" since="0.6.0.0" update="2014-09-10">
+		<item desc="代码重构,支持移动端" source="NGBF" />
+	</items>
+	<items author="SBQ" since="0.6.1.0" update="2014-09-11">
+		<item desc="迁移u-profile代码至此" source="NGBF" />
+	</items>
+	<items author="SBQ" since="0.7.0.0" update="2014-10-30">
+		<item desc="合并s-vote/u-vote-topic/u-vote-robort" source="NGBF" />
+	</items>
+</ngbf>

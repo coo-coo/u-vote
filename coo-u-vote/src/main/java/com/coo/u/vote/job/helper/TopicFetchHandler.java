@@ -30,11 +30,6 @@ public class TopicFetchHandler {
 	// 单位时间差:两小时
 	private static long DELTA_TS = 6 * 3600 * 1000;
 
-	public static void main(String[] args) {
-		// TopicFetchHandler handler = new TopicFetchHandler();
-		// handler.fetchAccountFocusTopic();
-	}
-
 	/**
 	 * 获得所有相应的Focus，计算是否需要推送
 	 */
@@ -66,8 +61,7 @@ public class TopicFetchHandler {
 						.getValue(mcKey);
 				if (topicMI != null) {
 					// 放置队列中，Key值就是頻道值
-					String channelCode = "c.account.focus."
-							+ focus.getAccount();
+					String channelCode = "channel_focus_" + focus.getAccount();
 					List<MongoItem> list = channels.get(channelCode);
 					if (list == null) {
 						list = new ArrayList<MongoItem>();
@@ -98,7 +92,7 @@ public class TopicFetchHandler {
 		QueryAttrs query = QueryAttrs.blank().desc("_tsi").limit(limit);
 		List<MongoItem> items = VoteUtil.getMongo().findItems(Topic.C_NAME,
 				query);
-		VoteUtil.getMC().put("c.topic.latest", items, Integer.MAX_VALUE);
+		VoteUtil.getMC().put("channel_latest", items, Integer.MAX_VALUE);
 	}
 
 	/**
@@ -109,7 +103,8 @@ public class TopicFetchHandler {
 		QueryAttrs query = QueryAttrs.blank().desc("vote").limit(limit);
 		List<MongoItem> items = VoteUtil.getMongo().findItems(Topic.C_NAME,
 				query);
-		VoteUtil.getMC().put("c.topic.top", items, Integer.MAX_VALUE);
+//		logger.debug("fetchTop MongoItem size:" + items.size());
+		VoteUtil.getMC().put("channel_top", items, Integer.MAX_VALUE);
 	}
 
 	/**
@@ -136,7 +131,7 @@ public class TopicFetchHandler {
 				// 获得所在频道的Code
 				String[] channelCodes = PubString.stringToArray(ccodes);
 				for (String cc : channelCodes) {
-					String channelCode = "c.type." + cc;
+					String channelCode = "channel_type_" + cc;
 					List<MongoItem> list = channels.get(channelCode);
 					if (list == null) {
 						list = new ArrayList<MongoItem>();

@@ -28,7 +28,7 @@ public class VoteRestService {
 	public NtpMessage channelAll(HttpServletRequest req) {
 		NtpMessage sm = NtpMessage.ok();
 		// 从ModelFactory处获得目前支持的Chanenl(Type),供M端同步比较
-		List<Channel> channels = ModelManager.getTypeChannels();
+		List<Channel> channels = ModelManager.TYPE_CHANNNELS;
 		for (Channel channel : channels) {
 			sm.add(channel);
 		}

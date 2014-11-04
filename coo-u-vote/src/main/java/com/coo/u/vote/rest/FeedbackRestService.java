@@ -48,7 +48,7 @@ public class FeedbackRestService extends CommonRest {
 		NtpMessage sm = NtpMessage.bind(data);
 		if (sm != null) {
 			// 直接Map对象传递到数据库中
-			sm.set("status", Feedback.STATUS_UNSOLVED.code);
+			sm.set("status", Feedback.STATUS_UNSOLVED);
 			VoteUtil.getMongo().insert(Feedback.C_NAME, sm.getData());
 		} else {
 			resp = resp.head(NtpHead.PARAMETER_ERROR);

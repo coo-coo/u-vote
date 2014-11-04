@@ -99,10 +99,11 @@ public class AccountRestService extends CommonRest {
 			String _id = (String) sm.get("_id");
 			// 字段名称 & 值
 			String key = (String) sm.get("key");
-			Object value = sm.getData().get("value");
+			String value = (String) sm.get("value");
 			// 直接Map对象传递到数据库中
 			Map<String, Object> item = new HashMap<String, Object>();
 			item.put(key, value);
+//			System.out.println(item);
 			VoteUtil.getMongo().update(Account.C_NAME, _id, item);
 		} else {
 			resp = resp.head(NtpHead.PARAMETER_ERROR);
@@ -133,7 +134,7 @@ public class AccountRestService extends CommonRest {
 		}
 		return resp;
 	}
-	
+
 	/**
 	 * [M端Task调用]获得全部账号列表信息，供Admin管理
 	 */

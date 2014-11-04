@@ -128,7 +128,7 @@ public class AccountHelper {
 	public static NtpMessage lockAccount(String account) {
 		// 锁定账号 是否使用operation TODO
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("status", Account.STATUS_LOCKED.code);
+		map.put("status", Account.STATUS_LOCKED);
 		QueryAttrs query = QueryAttrs.blank().add("mobile", account);
 		List<MongoItem> list = VoteUtil.getMongo().findItems(Account.C_NAME,
 				query);

@@ -1,11 +1,12 @@
 package com.coo.u.vote;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.coo.s.vote.model.Account;
 import com.coo.s.vote.model.Feedback;
+import com.coo.s.vote.model.SChannel;
+import com.coo.s.vote.model.SContact;
 import com.coo.s.vote.model.Topic;
 import com.coo.s.vote.model.TopicLeg;
 import com.google.gson.Gson;
@@ -21,7 +22,7 @@ import com.kingstar.ngbf.s.ntp.NtpMessage;
  * @date 2014-9-28 上午9:30:04
  * @since 1.0.0.0
  */
-
+@SuppressWarnings("unused")
 public class MockClient {
 
 	public static void main(String[] args) {
@@ -32,17 +33,155 @@ public class MockClient {
 		// MockClient.createFeedback("中文....");
 		// MockClient.accountFocusTopic(ACCOUNT, "5427683dcce5d3dc82564e00");
 
-		// Focus focus = new Focus();
-		// focus.setAccount(ACCOUNT);
-		// focus.setSubject(TOPICID);
-		// focus.setType(Focus.TYPE_ACCOUNT);
-		// // 转化为Map对象
-		// Map<String, Object> item = ModelManager.toMap(focus);
-		// System.out.println(item);
+		// MockClient.findAccounts();
+		// MockClient.updateAccountParam();
+		// MockClient.findTopics();
+		// MockClient.createTopic2("topic3",3);
+		MockClient.mcontactSync();
+		// MockClient.mchannelFind();
+	}
 
-		// QueryAttrs query = QueryAttrs.blank().and("account", "13917081673");
+	public static void mchannelFind() {
+		String host = "13917081673";
+		// 查找到所有相關的MContact信息,和M端传来的信息进行同步
+		QueryAttrs query = QueryAttrs.blank().add("host", host);
+		List<MongoItem> list = VoteUtil.findItems(SContact.C_NAME, query);
+		System.out.println(list.size());
+		// for (MongoItem mi : list) {
+		//
+		// }
+	}
 
-		MockClient.findAccounts();
+	/**
+	 * 本地Contact同步 M端将设备的通讯薄信息同步到SQLite之后,通过此方法实现和服务器端的同步
+	 */
+	public static void mcontactSync() {
+		// M端基础数据，即所有SQLite的MContact部分信息
+		NtpMessage data = new NtpMessage();
+		// 设置请求者
+		data.set("host", ACCOUNT);
+		for (int i = 0; i < 8; i++) {
+			// 参见MContact
+			SChannel item = new SChannel();
+			item.setHost(ACCOUNT);
+			item.setCode("code-" + i);
+			item.setLabel("频道241-" + i);
+			item.setId(""+i);
+			data.add(item);
+		}
+
+		 String uri = SERVERHOST + "/mchannel/sync";
+		 NtpMessage resp = HttpUtils2.doPostNtp(uri, data.toJson());
+		 System.out.println("isRespOK:" + isRespOK(resp));
+
+		// System.out.println(json);
+		//
+//		String json = data.toJson();
+//		System.out.println(json);
+//		NtpMessage nm2 = NtpMessage.bind(json);
+//		System.out.println(nm2.toJson());
+//		List<SChannel> items = nm2.getItems(SChannel.class);
+//		for (SChannel item : items) {
+//			
+//			System.out.println(item.getId());
+//			Map<String, Object> itemMap = ModelManager.toMap(item);
+////			Integer id = (Integer)itemMap.get("id");
+////			System.out.println(itemMap);
+//		}
+	}
+
+	public static void createTopic2(String title, int legCount) {
+		NtpMessage nm = new NtpMessage();
+		nm.set("title", title);
+		nm.set("owner", "13917081673");
+		// nm.set("expired", 0l);
+		// nm.set("status", Topic.STATUS_VALID);
+		// nm.set("vote", 0);
+		// nm.set("snapshot", System.currentTimeMillis());
+		for (int i = 0; i < legCount; i++) {
+			TopicLeg leg = new TopicLeg("" + i, "leg-" + i);
+			nm.add(leg);
+		}
+		// // 提示信息... toJson有问题?
+		String json = nm.toJson();
+		System.out.println(json);
+
+		// NtpMessage nm2 = NtpMessage.bind(json);
+		// System.out.println(nm2.toJson());
+		//
+		// Map<String, Object> item = new HashMap<String, Object>();
+		// item.putAll(nm2.getData());
+		// item.put("expired", 0l);
+		// item.put("status", Topic.STATUS_VALID);
+		// item.put("vote", 0);
+		// item.put("snapshot", System.currentTimeMillis());
+		//
+		// List<Map<String, Object>> legsMap = new ArrayList<Map<String,
+		// Object>>();
+		// List<TopicLeg> legs = nm2.getItems(TopicLeg.class);
+		// // System.out.println(legs.size());
+		// for (TopicLeg leg : legs) {
+		// Map<String, Object> lm = new HashMap<String, Object>();
+		// lm.put("leg_seq", leg.getSeq());
+		// lm.put("leg_vote", leg.getVote());
+		// lm.put("leg_title", leg.getTitle());
+		// legsMap.add(lm);
+		// }
+		// item.put("legs", legsMap);
+		//
+		// VoteUtil.getMongo().insert(Topic.C_NAME, item);
+
+		// toast(json);
+		String uri = SERVERHOST + "/topic/create";
+		NtpMessage resp = HttpUtils2.doPostNtp(uri, json);
+		System.out.println("isRespOK:" + isRespOK(resp));
+	}
+
+	/**
+	 * 创建话题
+	 */
+	public static void createTopic(String title, int legCount) {
+		Topic topic = new Topic(title, ACCOUNT);
+		for (int i = 0; i < legCount; i++) {
+			TopicLeg leg = new TopicLeg("" + i, "leg-" + i);
+			topic.add(leg);
+		}
+		// // 提示信息... toJson有问题?
+		String json = NtpHelper.toJson(topic);
+
+		// toast(json);
+		// String uri = SERVERHOST + "/topic/create";
+		// NtpMessage resp = HttpUtils2.doPostNtp(uri, json);
+		// System.out.println("isRespOK:" + isRespOK(resp));
+	}
+
+	public static void findTopics() {
+		// String uri = SERVERHOST + "/topic/list/mine?op=13917081673";
+		String uri = SERVERHOST + "/topic/list/code/channel_top?op=13917081673";
+		NtpMessage resp2 = HttpUtils2.doGetNtp(uri);
+		System.out.println(resp2.toJson());
+		List<Topic> list = resp2.getItems(Topic.class);
+		for (Topic topic : list) {
+			System.out.println(topic.getTitle() + "\t" + topic.getVote());
+			List<TopicLeg> legs = topic.getLegs();
+			// System.out.println(legs.size());
+		}
+
+	}
+
+	public static void updateAccountParam() {
+		NtpMessage nm = new NtpMessage();
+		nm.set("_id", "541155452170e0df13091431");
+		nm.set("key", "mail");
+		nm.set("value", "sbq@163.com");
+		// 发送更新请求...
+		String uri = SERVERHOST + "/account/update/param";
+		NtpMessage resp2 = HttpUtils2.doPostNtp(uri, nm.toJson());
+		System.out.println(resp2.toJson());
+
+		// 修改信息，參見topicUpdate
+		// httpCaller.doPost(Constants.BIZ_ACCOUNT_UPDATE_PARAM,
+		// Constants.rest(uri), nm);
 	}
 
 	public static void findAccounts() {
@@ -66,32 +205,27 @@ public class MockClient {
 		NtpMessage resp2 = HttpUtils2.doGetNtp(uri);
 		// System.out.println(resp2.toJson());
 		// NtpMessage resp2 = NtpMessage.bind(resp.toJson());
-		@SuppressWarnings("unused")
-		Gson gson = new Gson();
 
+		// Gson gson = new Gson();
 		// String s =
-		// "{_id=54236e2b8a0a15dbc9f0f576, _tsi=1.41160810705E12, _tsu=1.414994815316E12, owner=null, ownerId=null, updater=UNKNOWN, status=5.0, attrs={}, selected=false, mobile=13917081674, password=111111, type=0, account=13917081674, statusLabel=已锁定}";
-		// String s =
-		// "{_id=541155452170e0df13091431, _tsi=1.410422085771E12, _tsu=1.414733297191E12, owner=null, ownerId=null, updater=null, status=1.0, attrs={}, selected=false, mobile=13917081673, password=222222, type=2, account=13917081673, statusLabel=111}";
+		// "{_id=5457457404e3fa502330bc58, _tsi=1.415005556581E12, _tsu=0.0, owner=1, ownerId=1, updater=1, status=0.0, attrs={}, selected=false, mobile=13816965673, password=qqqqqq, type=0, account=13816965673}";
 		// Account a = gson.fromJson(s, Account.class);
 		// System.out.println(a.get_id() + "\t" + a.get_tsi() + "\t"
 		// + a.getStatus());
 
-		// for (Object obj : resp2.getItems()) {
-		//
-		// // Account
-		// String json = obj.toString();
-		// System.out.println(json);
-		// Account item = gson.fromJson(obj.toString(), Account.class);
-		// System.out.println(item.get_id() + "\t" + item.get_tsi() + "\t"
-		// + item.getStatus());
-		// }
+		for (Object obj : resp2.getItems()) {
+			String json = obj.toString();
+			System.out.println(json);
+			// Account item = gson.fromJson(obj.toString(), Account.class);
+			// System.out.println(item.get_id() + "\t" + item.get_tsi() + "\t"
+			// + item.getStatus());
+		}
 
 		List<Account> list = resp2.getItems(Account.class);
-		System.out.println(list.size());
-		for (Account account : list) {
-			System.out.println(account.getMobile());
-		}
+		// System.out.println(list.size());
+		// for (Account account : list) {
+		// // System.out.println(account.getMobile());
+		// }
 
 	}
 
@@ -162,53 +296,12 @@ public class MockClient {
 	}
 
 	/**
-	 * 本地Contact同步 M端将设备的通讯薄信息同步到SQLite之后,通过此方法实现和服务器端的同步
-	 */
-	public static void mcontactSync() {
-		// M端基础数据，即所有SQLite的MContact部分信息
-		NtpMessage data = new NtpMessage();
-		// 设置请求者
-		data.set("host", ACCOUNT);
-		for (int i = 0; i < 5; i++) {
-			// 参见MContact
-			Map<String, Object> item = new HashMap<String, Object>();
-			item.put("mobile", "mobile1-" + i);
-			item.put("name", "name-" + i);
-			item.put("host", ACCOUNT);
-			item.put("status", 1);
-			data.add(item);
-		}
-		String uri = SERVERHOST + "/mcontact/sync";
-		String json = data.toJson();
-		System.out.println(json);
-		NtpMessage resp = HttpUtils2.doPostNtp(uri, json);
-		System.out.println("isRespOK:" + isRespOK(resp));
-	}
-
-	/**
 	 * 投票
 	 */
 	public static void voteTopic(String toipicId, String legSeq) {
 		String uri = SERVERHOST + "/topic/vote/account/" + ACCOUNT + "/topic/"
 				+ toipicId + "/legSeq/" + legSeq;
 		NtpMessage resp = HttpUtils2.doGetNtp(uri);
-		System.out.println("isRespOK:" + isRespOK(resp));
-	}
-
-	/**
-	 * 创建话题
-	 */
-	public static void createTopic(String title, int legCount) {
-		Topic topic = new Topic(title, ACCOUNT);
-		for (int i = 0; i < legCount; i++) {
-			TopicLeg leg = new TopicLeg("" + i, "leg-" + i);
-			topic.add(leg);
-		}
-		// // 提示信息... toJson有问题?
-		String json = NtpHelper.toJson(topic);
-		// toast(json);
-		String uri = SERVERHOST + "/topic/create";
-		NtpMessage resp = HttpUtils2.doPostNtp(uri, json);
 		System.out.println("isRespOK:" + isRespOK(resp));
 	}
 

@@ -15,6 +15,7 @@ import com.coo.s.vote.model.Topic;
 import com.coo.s.vote.model.TopicLeg;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.util.GenericsUtil;
+import com.kingstar.ngbf.s.util.PubString;
 
 /**
  * @description
@@ -24,7 +25,7 @@ import com.kingstar.ngbf.s.util.GenericsUtil;
  */
 public class ModelManager {
 
-	private static List<Channel> TYPE_CHANNNELS = new ArrayList<Channel>();
+	public static List<Channel> TYPE_CHANNNELS = new ArrayList<Channel>();
 
 	static {
 		TYPE_CHANNNELS.add(new Channel("yinyue", "音乐"));
@@ -36,7 +37,9 @@ public class ModelManager {
 	}
 
 	/**
-	 * 将指定的BasicObject根据@Column注解,生成简单的Map对象 用于将对象生成到MongoItem中 进队有注解的字段进行实现
+	 * 将指定的BasicObject根据@Column注解,生成简单的Map对象 
+	 * 用于将对象生成到MongoItem中 进队有注解的字段进行实现
+	 * M端发送对象回来,Server端进行转换[方向:M->S]
 	 */
 	public static Map<String, Object> toMap(BasicObject bo) {
 		Map<String, Object> item = new HashMap<String, Object>();
@@ -47,23 +50,28 @@ public class ModelManager {
 			Column col = field.getAnnotation(Column.class);
 			if (col != null) {
 				String fieldName = field.getName();
-				System.out.println(fieldName);
 				Object value = "";
 				try {
 					value = PropertyUtils.getProperty(bo, fieldName);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				item.put(col.name(), value);
+
+				// 键值...缺省是参照注解,如果没有声明,则按照字段名称来
+				String key = col.name();
+				if (PubString.isNullOrSpace(key)) {
+					key = fieldName;
+				}
+				item.put(key, value);
 			}
 		}
 		// 放置其它全部属性
-		item.putAll(bo.getAttrs());
+//		item.putAll(bo.getAttrs());
 		return item;
 	}
 
 	/**
-	 * 将MI对象的值Merge到BO中
+	 * 将MI对象的值Merge到BO中[方向:S->M]
 	 */
 	public static void merge(MongoItem mi, BasicObject bo) {
 		// 获得所有的Field列表，遍历循环
@@ -89,10 +97,8 @@ public class ModelManager {
 	}
 
 	/**
-	 * 将MongoItem对象转换成为Topic对象
-	 * 
-	 * @param mi
-	 * @return
+	 * 将MongoItem对象转换成为Topic对象，传递到M端
+	 * [方向:S->M]
 	 */
 	@SuppressWarnings("unchecked")
 	public static Topic mi2Topic(MongoItem mi) {
@@ -114,63 +120,11 @@ public class ModelManager {
 		return topic;
 	}
 
-	/**
-	 * 根据远端的由Topic生成的Json数据转换而成... 参见ModelManager.mi2Topic
-	 */
-	public static Map<String, Object> topic2MI(Topic topic) {
-		Map<String, Object> item = new HashMap<String, Object>();
-		item.put("title", topic.getTitle());
-		item.put("owner", topic.getOwner());
-		// 設置到期時間
-		item.put("expired", 0l);
-		item.put("status", Topic.STATUS_VALID);
-		// 最新投票數:0
-		item.put("vote", 0);
-		// 创建快照时间...
-		item.put("snapshot", System.currentTimeMillis());
-		// 定义所属频道...
-		item.put("channels", "");
-
-		List<Map<String, Object>> legs = new ArrayList<Map<String, Object>>();
-		for (TopicLeg leg : topic.getLegs()) {
-			Map<String, Object> lm = new HashMap<String, Object>();
-			lm.put("leg_seq", leg.getSeq());
-			lm.put("leg_vote", leg.getVote());
-			lm.put("leg_title", leg.getTitle());
-			legs.add(lm);
-		}
-		item.put("legs", legs);
-		return item;
-	}
-
-	public static Long getLong(MongoItem mi, String key) {
+	private static Long getLong(MongoItem mi, String key) {
 		Object value = mi.get(key);
 		if (value == null) {
 			return 0l;
 		}
 		return (Long) value;
-	}
-
-	public static Integer getInteger(MongoItem mi, String key) {
-		Object value = mi.get(key);
-		if (value == null) {
-			return 0;
-		}
-		return (Integer) value;
-	}
-
-	public static String getString(MongoItem mi, String key) {
-		Object value = mi.get(key);
-		if (value == null) {
-			return "";
-		}
-		return (String) value;
-	}
-
-	/**
-	 * 返回所有的静态的类型频道 u-topic/u-robort等都用到
-	 */
-	public static List<Channel> getTypeChannels() {
-		return TYPE_CHANNNELS;
 	}
 }

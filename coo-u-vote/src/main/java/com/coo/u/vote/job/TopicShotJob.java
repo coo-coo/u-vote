@@ -104,7 +104,7 @@ public class TopicShotJob extends AbstractJob {
 			for (MongoItem vote : items) {
 				Map<String, Object> item = new HashMap<String, Object>();
 				// 设置Vote已统计
-				item.put("status", 9);
+				item.put("status", Vote.STATUS_COUNTED);
 				MongoUtil.getClient().update(Vote.C_NAME, vote.get_id(), item);
 			}
 

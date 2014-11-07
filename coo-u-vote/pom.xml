@@ -14,7 +14,6 @@
 	<description>coo-u-vote</description>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>com.kingstar.ngbf</groupId>
 			<artifactId>ngbf-s-ntp</artifactId>
@@ -57,7 +56,15 @@
 			<version>2.3.0.0</version>
 			<scope>provided</scope>
 		</dependency>
-
+	
+		<dependency>
+			<groupId>com.kingstar.ngbf</groupId>
+			<artifactId>ngbf-s-template</artifactId>
+			<version>2.1.0.0</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>

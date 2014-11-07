@@ -13,6 +13,8 @@ import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.NgbfMongoClient;
 import com.kingstar.ngbf.s.mongo.NgbfMongoConfiguration;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
+import com.kingstar.ngbf.s.template.INgbfTemplateService;
+import com.kingstar.ngbf.s.template.NgbfTemplateServiceImpl;
 import com.kingstar.ngbf.u.base.UFactory;
 
 /**
@@ -28,7 +30,20 @@ public final class VoteUtil {
 	public static Logger logger = Logger.getLogger(VoteUtil.class);
 
 	private static INgbfMongoClient mongoClient;
-
+	
+	private static INgbfTemplateService templateService;
+	
+	/**
+	 * 获得模板服务
+	 * @return
+	 */
+	public static INgbfTemplateService getTemplateService() {
+		if(templateService==null){
+			templateService = new NgbfTemplateServiceImpl();
+		}
+		return templateService;
+	}
+	
 	/**
 	 * TODO 获得MC中的各对象的名称....
 	 */

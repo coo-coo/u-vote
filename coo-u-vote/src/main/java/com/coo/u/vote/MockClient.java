@@ -1,7 +1,6 @@
 package com.coo.u.vote;
 
 import java.util.List;
-import java.util.Map;
 
 import com.coo.s.vote.model.Account;
 import com.coo.s.vote.model.Feedback;
@@ -9,6 +8,7 @@ import com.coo.s.vote.model.SChannel;
 import com.coo.s.vote.model.SContact;
 import com.coo.s.vote.model.Topic;
 import com.coo.s.vote.model.TopicLeg;
+import com.coo.u.vote.job.TopicHtmlBuildJob;
 import com.google.gson.Gson;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
@@ -37,8 +37,14 @@ public class MockClient {
 		// MockClient.updateAccountParam();
 		// MockClient.findTopics();
 		// MockClient.createTopic2("topic3",3);
-		MockClient.mcontactSync();
+		// MockClient.mcontactSync();
 		// MockClient.mchannelFind();
+		MockClient.topicHtmlBuild();
+	}
+
+	public static void topicHtmlBuild() {
+		TopicHtmlBuildJob job = new TopicHtmlBuildJob();
+		job.execute();
 	}
 
 	public static void mchannelFind() {
@@ -66,28 +72,28 @@ public class MockClient {
 			item.setHost(ACCOUNT);
 			item.setCode("code-" + i);
 			item.setLabel("频道241-" + i);
-			item.setId(""+i);
+			item.setId("" + i);
 			data.add(item);
 		}
 
-		 String uri = SERVERHOST + "/mchannel/sync";
-		 NtpMessage resp = HttpUtils2.doPostNtp(uri, data.toJson());
-		 System.out.println("isRespOK:" + isRespOK(resp));
+		String uri = SERVERHOST + "/mchannel/sync";
+		NtpMessage resp = HttpUtils2.doPostNtp(uri, data.toJson());
+		System.out.println("isRespOK:" + isRespOK(resp));
 
 		// System.out.println(json);
 		//
-//		String json = data.toJson();
-//		System.out.println(json);
-//		NtpMessage nm2 = NtpMessage.bind(json);
-//		System.out.println(nm2.toJson());
-//		List<SChannel> items = nm2.getItems(SChannel.class);
-//		for (SChannel item : items) {
-//			
-//			System.out.println(item.getId());
-//			Map<String, Object> itemMap = ModelManager.toMap(item);
-////			Integer id = (Integer)itemMap.get("id");
-////			System.out.println(itemMap);
-//		}
+		// String json = data.toJson();
+		// System.out.println(json);
+		// NtpMessage nm2 = NtpMessage.bind(json);
+		// System.out.println(nm2.toJson());
+		// List<SChannel> items = nm2.getItems(SChannel.class);
+		// for (SChannel item : items) {
+		//
+		// System.out.println(item.getId());
+		// Map<String, Object> itemMap = ModelManager.toMap(item);
+		// // Integer id = (Integer)itemMap.get("id");
+		// // System.out.println(itemMap);
+		// }
 	}
 
 	public static void createTopic2(String title, int legCount) {

@@ -13,6 +13,8 @@ import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.NgbfMongoClient;
 import com.kingstar.ngbf.s.mongo.NgbfMongoConfiguration;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
+import com.kingstar.ngbf.s.template.INgbfTemplateService;
+import com.kingstar.ngbf.s.template.NgbfTemplateServiceImpl;
 import com.kingstar.ngbf.u.base.UFactory;
 
 /**
@@ -28,7 +30,20 @@ public final class VoteUtil {
 	public static Logger logger = Logger.getLogger(VoteUtil.class);
 
 	private static INgbfMongoClient mongoClient;
-
+	
+	private static INgbfTemplateService templateService;
+	
+	/**
+	 * 获得模板服务
+	 * @return
+	 */
+	public static INgbfTemplateService getTemplateService() {
+		if(templateService==null){
+			templateService = new NgbfTemplateServiceImpl();
+		}
+		return templateService;
+	}
+	
 	/**
 	 * TODO 获得MC中的各对象的名称....
 	 */
@@ -98,64 +113,4 @@ public final class VoteUtil {
 	public static void addOperation(IOperation operation) {
 		AsynManager.getInstance().put(operation);
 	}
-
-	// public static SimpleMessage<?> doPost(String url, String jsondata) {
-	// SimpleMessage<?> resp = null;
-	// try {
-	// HttpClient client = new HttpClient();
-	// // 创建POST方法的实例
-	// PostMethod method = new PostMethod(url);
-	// method.setRequestEntity(new StringRequestEntity(jsondata,
-	// "text/json", "UTF-8"));
-	// logger.debug(url + "\t" + jsondata);
-	// // 获得状态，如果是200
-	// int status = client.executeMethod(method);
-	// if (status == HttpStatus.SC_OK) {
-	// resp = SimpleMessage.bind(method.getResponseBodyAsString());
-	// }
-	// } catch (Exception e) {
-	// logger.error("请求失败:" + url, e);
-	// }
-	// return resp;
-	// }
-
-	// /**
-	// * 提交SimpleMessage对象的Json数据到服务器端,返回SimpleMessage到客户端 如果失败返回Null TODO
-	// * 落到s-util中或s-ntp中
-	// *
-	// * @deprecated
-	// * @since 0.1.2.0
-	// */
-	// public static SimpleMessage<?> doPost(String url, SimpleMessage<?> sm) {
-	// return doPost(url, sm.toJson());
-	// }
-
-	// /////////////////////////////////////////////////////////
-
-	// /**
-	// * 创建自动主题分表,暂时以年分表(数据量不够)
-	// * @deprecated @since 0.1.5.0 交到相关处实现
-	// * @since 0.1.0.0
-	// * @return
-	// */
-	// public String getAutoTopicColName() {
-	// String suffix = TimeUtil.getNow(FORMAT_YYYY);
-	// return INameSpace.COLLECTION_TOPIC + "_" + suffix;
-	// }
-	//
-	// /**
-	// * 创建投票分表,暂时以月分表(数据量不够)
-	// * @deprecated @since 0.1.5.0 交到相关处实现
-	// * @since 0.1.0.0
-	// * @return
-	// */
-	// public String getAutoVoteColName() {
-	// String suffix = TimeUtil.getNow(FORMAT_YYYYMM);
-	// return INameSpace.COLLECTION_VOTE + "_" + suffix;
-	// }
-
-	// ////////////////////////////////////////////////////////////////
-	// 获得一些句柄资源,替代VoteFactory
-	// ////////////////////////////////////////////////////////////////
-
 }

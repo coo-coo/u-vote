@@ -50,11 +50,30 @@ public class TopicHtmlBuildJob extends AbstractJob {
 				fileName);
 	}
 
-	/**
-	 * 获得模板地址
-	 * TODO 简单的性能提高...static DIR
-	 * @return
-	 */
+	// /**
+	// * 获得模板地址
+	// * TODO 简单的性能提高...static DIR
+	// * @return
+	// */
+	// // 生成html文件
+	// public void generateHtmlFile(Topic topic) {
+	// Map<String, Object> map = new HashMap<String, Object>();
+	// // 放置对象
+	// map.put("topic", topic);
+	// // 生成文件
+	// String template = "topic_template.vm";
+	// String targetDir = getTemplateDir();
+	// System.out.println(targetDir);
+	// String targetDir2 =
+	// "C:\\develop\\eclipse_git_workspace\\repo-d-vote\\coo-d-vote\\target\\coo-d-vote-0.7.0.0-bin\\web\\topic\\";
+	// System.out.println(targetDir2);
+	//
+	// String fileName = targetDir + "t_" + topic.get_id() + ".html";
+	// // 通过模板生成文件..
+	// VoteUtil.getTemplateService()
+	// .create(template, map, targetDir, fileName);
+	// }
+
 	private String getTemplateDir() {
 		return SystemUtil.getWebAppPath().replace("lib/", "")
 				.replace("\\", "/")

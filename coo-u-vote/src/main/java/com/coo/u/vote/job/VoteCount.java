@@ -1,4 +1,4 @@
-package com.coo.u.vote.job.helper;
+package com.coo.u.vote.job;
 
 import java.util.HashMap;
 import java.util.Map;

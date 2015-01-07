@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.coo.s.cloud.rest.GenericCloudRest;
 import com.coo.s.vote.model.MModel;
 import com.coo.s.vote.model.SChannel;
 import com.coo.u.vote.ModelManager;
-import com.coo.u.vote.VoteUtil;
+import com.coo.u.vote.VoteManager;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
 import com.kingstar.ngbf.s.ntp.NtpHead;
@@ -31,10 +32,10 @@ import com.kingstar.ngbf.s.ntp.NtpMessage;
  */
 @Controller
 @RequestMapping("/")
-public class LiteRestService extends CommonRest {
+public class LiteRest extends GenericCloudRest {
 
 	// @SuppressWarnings("unused")
-	 private Logger logger = Logger.getLogger(LiteRestService.class);
+	 private Logger logger = Logger.getLogger(LiteRest.class);
 
 	/**
 	 * 同步M端的MContact信息,即从M端Post过来列表MContact信息 NtpMessage add(Map<String,Object>)
@@ -118,7 +119,7 @@ public class LiteRestService extends CommonRest {
 		String host = (String) nm.get("host");
 		// 查找到所有相關的MContact信息,和M端传来的信息进行同步
 		QueryAttrs query = QueryAttrs.blank().add("host", host);
-		List<MongoItem> list = VoteUtil.findItems(collection, query);
+		List<MongoItem> list = VoteManager.findItems(collection, query);
 		// 存成Map便於匹配
 		Map<String, MongoItem> map = new HashMap<String, MongoItem>();
 		for (MongoItem mi : list) {
@@ -146,10 +147,10 @@ public class LiteRestService extends CommonRest {
 			if (mi != null) {
 				// 表示服务器端已经有此数据，需要进行MongoDB的更新操作
 				String _id = mi.get_id();
-				VoteUtil.getMongo().update(collection, _id, itemMap);
+				VoteManager.getMongo().update(collection, _id, itemMap);
 			} else {
 				// 表示服务器端已经有此数据，需要进行MongoDB的存储操作
-				VoteUtil.getMongo().insert(collection, itemMap);
+				VoteManager.getMongo().insert(collection, itemMap);
 			}
 		}
 	}
@@ -175,7 +176,7 @@ public class LiteRestService extends CommonRest {
 	private void merge(NtpMessage resp, String collection, String host) {
 		// 查找到所有相關的MContact信息,和M端传来的信息进行同步
 		QueryAttrs query = QueryAttrs.blank().add("host", host);
-		List<MongoItem> list = VoteUtil.findItems(collection, query);
+		List<MongoItem> list = VoteManager.findItems(collection, query);
 		for (MongoItem mi : list) {
 			resp.add(mi.toMap());
 		}
@@ -189,7 +190,7 @@ public class LiteRestService extends CommonRest {
 		String host = (String) nm.get("host");
 		// 查找到所有相關的MContact信息,和M端传来的信息进行同步
 		QueryAttrs query = QueryAttrs.blank().add("host", host);
-		List<MongoItem> list = VoteUtil.findItems(collection, query);
+		List<MongoItem> list = VoteManager.findItems(collection, query);
 		// 存成Map便於匹配
 		Map<String, MongoItem> map = new HashMap<String, MongoItem>();
 		for (MongoItem mi : list) {
@@ -209,10 +210,10 @@ public class LiteRestService extends CommonRest {
 			if (mi != null) {
 				// 表示服务器端已经有此数据，需要进行MongoDB的更新操作
 				String _id = mi.get_id();
-				VoteUtil.getMongo().update(collection, _id, item);
+				VoteManager.getMongo().update(collection, _id, item);
 			} else {
 				// 表示服务器端已经有此数据，需要进行MongoDB的存储操作
-				VoteUtil.getMongo().insert(collection, item);
+				VoteManager.getMongo().insert(collection, item);
 			}
 		}
 	}

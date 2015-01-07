@@ -2,8 +2,7 @@ package com.coo.u.vote.job;
 
 import org.apache.log4j.Logger;
 
-import com.coo.u.vote.INameSpace;
-import com.coo.u.vote.job.helper.TopicFetchHandler;
+import com.coo.s.cloud.job.GenericCloudJob;
 import com.kingstar.ngbf.s.util.SpringContextFactory;
 
 /**
@@ -14,18 +13,28 @@ import com.kingstar.ngbf.s.util.SpringContextFactory;
  * @date 2014-6-4 下午3:13:14
  * @since 0.1.0.0
  */
-public class TopicFetchJob extends AbstractJob {
+public class TopicFetchJob extends GenericCloudJob {
 
 	protected static Logger logger = Logger.getLogger(TopicFetchJob.class);
+
+	// 最新创建条目数
+	private int LIMIT_LATEST_CREATE = 100;
+	// 最新更新条目数
+	@SuppressWarnings("unused")
+	private int LIMIT_LATEST_UPDATE = 100;
+	// 投票最多条目数
+	private int LIMIT_TOP = 100;
+	// 静态Channel获取条目数
+	private int LIMIT_CHANNEL_FETCH = 500;
 
 	@Override
 	public void execute() {
 		// 获得最新创建
-		getHandler().fetchLatest(INameSpace.LIMIT_LATEST_CREATE);
+		getHandler().fetchLatest(LIMIT_LATEST_CREATE);
 		// 获得投票最高
-		getHandler().fetchTop(INameSpace.LIMIT_TOP);
+		getHandler().fetchTop(LIMIT_TOP);
 		// 获得各个静态Channel下的Topic
-		getHandler().fetchChannelTypes(INameSpace.LIMIT_CHANNEL_FETCH);
+		getHandler().fetchChannelTypes(LIMIT_CHANNEL_FETCH);
 		// 获得Account关注的Topic
 		getHandler().fetchAccountFocusTopic();
 

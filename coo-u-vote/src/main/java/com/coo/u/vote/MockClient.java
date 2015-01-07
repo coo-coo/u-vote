@@ -2,6 +2,7 @@ package com.coo.u.vote;
 
 import java.util.List;
 
+import com.coo.s.cloud.HttpUtils;
 import com.coo.s.vote.model.Account;
 import com.coo.s.vote.model.Feedback;
 import com.coo.s.vote.model.SChannel;
@@ -39,7 +40,10 @@ public class MockClient {
 		// MockClient.createTopic2("topic3",3);
 		// MockClient.mcontactSync();
 		// MockClient.mchannelFind();
-		MockClient.topicHtmlBuild();
+		// MockClient.topicHtmlBuild();
+		String s1 = null;
+		boolean tof = s1 == null ? true : false;
+		System.out.println(tof);
 	}
 
 	public static void topicHtmlBuild() {
@@ -51,7 +55,7 @@ public class MockClient {
 		String host = "13917081673";
 		// 查找到所有相關的MContact信息,和M端传来的信息进行同步
 		QueryAttrs query = QueryAttrs.blank().add("host", host);
-		List<MongoItem> list = VoteUtil.findItems(SContact.C_NAME, query);
+		List<MongoItem> list = VoteManager.findItems(SContact.C_NAME, query);
 		System.out.println(list.size());
 		// for (MongoItem mi : list) {
 		//
@@ -77,7 +81,7 @@ public class MockClient {
 		}
 
 		String uri = SERVERHOST + "/mchannel/sync";
-		NtpMessage resp = HttpUtils2.doPostNtp(uri, data.toJson());
+		NtpMessage resp = HttpUtils.doPostNtp(uri, data.toJson());
 		System.out.println("isRespOK:" + isRespOK(resp));
 
 		// System.out.println(json);
@@ -139,7 +143,7 @@ public class MockClient {
 
 		// toast(json);
 		String uri = SERVERHOST + "/topic/create";
-		NtpMessage resp = HttpUtils2.doPostNtp(uri, json);
+		NtpMessage resp = HttpUtils.doPostNtp(uri, json);
 		System.out.println("isRespOK:" + isRespOK(resp));
 	}
 
@@ -157,14 +161,14 @@ public class MockClient {
 
 		// toast(json);
 		// String uri = SERVERHOST + "/topic/create";
-		// NtpMessage resp = HttpUtils2.doPostNtp(uri, json);
+		// NtpMessage resp = HttpUtils.doPostNtp(uri, json);
 		// System.out.println("isRespOK:" + isRespOK(resp));
 	}
 
 	public static void findTopics() {
 		// String uri = SERVERHOST + "/topic/list/mine?op=13917081673";
 		String uri = SERVERHOST + "/topic/list/code/channel_top?op=13917081673";
-		NtpMessage resp2 = HttpUtils2.doGetNtp(uri);
+		NtpMessage resp2 = HttpUtils.doGetNtp(uri);
 		System.out.println(resp2.toJson());
 		List<Topic> list = resp2.getItems(Topic.class);
 		for (Topic topic : list) {
@@ -182,7 +186,7 @@ public class MockClient {
 		nm.set("value", "sbq@163.com");
 		// 发送更新请求...
 		String uri = SERVERHOST + "/account/update/param";
-		NtpMessage resp2 = HttpUtils2.doPostNtp(uri, nm.toJson());
+		NtpMessage resp2 = HttpUtils.doPostNtp(uri, nm.toJson());
 		System.out.println(resp2.toJson());
 
 		// 修改信息，參見topicUpdate
@@ -208,7 +212,7 @@ public class MockClient {
 		// System.out.println(resp.toJson());
 
 		String uri = SERVERHOST + "/account/list/all";
-		NtpMessage resp2 = HttpUtils2.doGetNtp(uri);
+		NtpMessage resp2 = HttpUtils.doGetNtp(uri);
 		// System.out.println(resp2.toJson());
 		// NtpMessage resp2 = NtpMessage.bind(resp.toJson());
 
@@ -239,7 +243,7 @@ public class MockClient {
 		NtpMessage sm = new NtpMessage(NtpHead.OK);
 		QueryAttrs query = QueryAttrs.blank().desc("_tsi");
 		// 查询获得列表，因为，数据较简单，直接从Mongo数据库中获得
-		List<MongoItem> items = VoteUtil.getMockMongo().findItems(
+		List<MongoItem> items = VoteManager.getMockMongo().findItems(
 				Feedback.C_NAME, query);
 		for (MongoItem mi : items) {
 			Feedback fb = new Feedback();
@@ -271,7 +275,7 @@ public class MockClient {
 		String uri = SERVERHOST + "/feedback/create/";
 		String json = sm.toJson();
 		System.out.println(json);
-		NtpMessage resp = HttpUtils2.doPostNtp(uri, json);
+		NtpMessage resp = HttpUtils.doPostNtp(uri, json);
 		System.out.println("isRespOK:" + isRespOK(resp));
 	}
 
@@ -287,7 +291,7 @@ public class MockClient {
 		String uri = SERVERHOST + "/profile/update/param";
 		String json = data.toJson();
 		System.out.println(json);
-		NtpMessage resp = HttpUtils2.doPostNtp(uri, json);
+		NtpMessage resp = HttpUtils.doPostNtp(uri, json);
 		System.out.println("isRespOK:" + isRespOK(resp));
 	}
 
@@ -297,7 +301,7 @@ public class MockClient {
 
 	public static void accountFocusTopic(String account, String topicId) {
 		String uri = SERVERHOST + "/focus/topic/" + account + "/" + topicId;
-		NtpMessage resp = HttpUtils2.doGetNtp(uri);
+		NtpMessage resp = HttpUtils.doGetNtp(uri);
 		System.out.println("isRespOK:" + isRespOK(resp));
 	}
 
@@ -307,7 +311,7 @@ public class MockClient {
 	public static void voteTopic(String toipicId, String legSeq) {
 		String uri = SERVERHOST + "/topic/vote/account/" + ACCOUNT + "/topic/"
 				+ toipicId + "/legSeq/" + legSeq;
-		NtpMessage resp = HttpUtils2.doGetNtp(uri);
+		NtpMessage resp = HttpUtils.doGetNtp(uri);
 		System.out.println("isRespOK:" + isRespOK(resp));
 	}
 

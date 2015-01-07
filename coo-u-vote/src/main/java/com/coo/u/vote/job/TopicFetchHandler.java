@@ -1,4 +1,4 @@
-package com.coo.u.vote.job.helper;
+package com.coo.u.vote.job;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.coo.s.vote.model.Focus;
 import com.coo.s.vote.model.Topic;
 import com.coo.u.vote.ModelManager;
-import com.coo.u.vote.VoteUtil;
+import com.coo.u.vote.VoteManager;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
 import com.kingstar.ngbf.s.util.PubString;
@@ -38,7 +38,7 @@ public class TopicFetchHandler {
 		// 查找结果集
 		QueryAttrs query = QueryAttrs.blank().add("type", Focus.TYPE_TOPIC)
 				.add("status", Focus.STATUS_VALID);
-		List<MongoItem> items = VoteUtil.findItems(Focus.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Focus.C_NAME, query);
 
 		// 定义分发队列
 		Map<String, List<MongoItem>> channels = new HashMap<String, List<MongoItem>>();
@@ -57,7 +57,7 @@ public class TopicFetchHandler {
 			if (diff > 0l && diff < DELTA_TS) {
 				// 从MC中获取该Topic,参见TopicJob
 				String mcKey = "topic." + focus.getSubject();
-				MongoItem topicMI = (MongoItem) VoteUtil.getMC()
+				MongoItem topicMI = (MongoItem) VoteManager.getMC()
 						.getValue(mcKey);
 				if (topicMI != null) {
 					// 放置队列中，Key值就是頻道值
@@ -78,7 +78,7 @@ public class TopicFetchHandler {
 		for (Entry<String, List<MongoItem>> entry : set) {
 			logger.debug(entry.getKey() + "\tMC size="
 					+ entry.getValue().size());
-			VoteUtil.getMC().put(entry.getKey(), entry.getValue(),
+			VoteManager.getMC().put(entry.getKey(), entry.getValue(),
 					Integer.MAX_VALUE);
 		}
 	}
@@ -90,9 +90,9 @@ public class TopicFetchHandler {
 	public void fetchLatest(int limit) {
 		// 查找MongoItem对象
 		QueryAttrs query = QueryAttrs.blank().desc("_tsi").limit(limit);
-		List<MongoItem> items = VoteUtil.getMongo().findItems(Topic.C_NAME,
+		List<MongoItem> items = VoteManager.getMongo().findItems(Topic.C_NAME,
 				query);
-		VoteUtil.getMC().put("channel_latest", items, Integer.MAX_VALUE);
+		VoteManager.getMC().put("channel_latest", items, Integer.MAX_VALUE);
 	}
 
 	/**
@@ -101,10 +101,10 @@ public class TopicFetchHandler {
 	@Async
 	public void fetchTop(int limit) {
 		QueryAttrs query = QueryAttrs.blank().desc("vote").limit(limit);
-		List<MongoItem> items = VoteUtil.getMongo().findItems(Topic.C_NAME,
+		List<MongoItem> items = VoteManager.getMongo().findItems(Topic.C_NAME,
 				query);
 //		logger.debug("fetchTop MongoItem size:" + items.size());
-		VoteUtil.getMC().put("channel_top", items, Integer.MAX_VALUE);
+		VoteManager.getMC().put("channel_top", items, Integer.MAX_VALUE);
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class TopicFetchHandler {
 		// TODO 暂时获得1000条,也可以是全部?
 		QueryAttrs query = QueryAttrs.blank().desc("_tsu").limit(limit);
 		// 获得条目
-		List<MongoItem> items = VoteUtil.getMongo().findItems(Topic.C_NAME,
+		List<MongoItem> items = VoteManager.getMongo().findItems(Topic.C_NAME,
 				query);
 
 		// 定義TypeChannels
@@ -146,7 +146,7 @@ public class TopicFetchHandler {
 		// 放置MC中
 		Set<Entry<String, List<MongoItem>>> set = channels.entrySet();
 		for (Entry<String, List<MongoItem>> entry : set) {
-			VoteUtil.getMC().put(entry.getKey(), entry.getValue(),
+			VoteManager.getMC().put(entry.getKey(), entry.getValue(),
 					Integer.MAX_VALUE);
 		}
 	}

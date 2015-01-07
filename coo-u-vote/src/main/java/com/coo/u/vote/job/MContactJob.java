@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.coo.s.cloud.job.GenericCloudJob;
 import com.coo.s.vote.model.MModel;
-import com.coo.u.vote.VoteUtil;
+import com.coo.u.vote.VoteManager;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.MongoUtil;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
@@ -15,7 +16,7 @@ import com.kingstar.ngbf.s.mongo.QueryAttrs;
  * 参见M端VoteManager.getProfileSkeletonItems()
  */
 
-public class MContactJob extends AbstractJob {
+public class MContactJob extends GenericCloudJob {
 
 	/*
 	 * (non-Javadoc)
@@ -36,7 +37,7 @@ public class MContactJob extends AbstractJob {
 			String mcKey = "account." + mobile;
 
 			// 从MC中获取Account账号,參見AccountJob
-			MongoItem accountMI = (MongoItem) VoteUtil.getMC().getValue(mcKey);
+			MongoItem accountMI = (MongoItem) VoteManager.getMC().getValue(mcKey);
 			if (accountMI != null) {
 				// 表明该Mobile已经有账号注册
 				String contactId = mi.get_id();

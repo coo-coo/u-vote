@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.coo.s.cloud.job.GenericCloudJob;
 import com.coo.s.vote.model.Topic;
 import com.coo.s.vote.model.Vote;
-import com.coo.u.vote.job.helper.VoteCount;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.MongoUtil;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
@@ -17,7 +17,7 @@ import com.kingstar.ngbf.s.mongo.QueryAttrs;
 /**
  * Topic表最新状态更新 Topic.old + Vote(s) = Topic.new 进行快照设定
  */
-public class TopicShotJob extends AbstractJob {
+public class TopicShotJob extends GenericCloudJob {
 
 	private static Logger logger = Logger.getLogger(TopicShotJob.class);
 

@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.coo.s.cloud.rest.GenericRest;
 import com.coo.s.vote.model.Topic;
 import com.coo.s.vote.model.TopicLeg;
 import com.coo.s.vote.model.Vote;
 import com.coo.u.vote.ModelManager;
-import com.coo.u.vote.VoteUtil;
+import com.coo.u.vote.VoteManager;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
 import com.kingstar.ngbf.s.ntp.NtpHead;
@@ -29,7 +30,7 @@ import com.kingstar.ngbf.s.ntp.NtpMessage;
  */
 @Controller
 @RequestMapping("/topic")
-public class TopicRestService extends CommonRest {
+public class TopicRest extends GenericRest {
 
 	// private static Logger logger = Logger.getLogger(TopicRestService.class);
 
@@ -42,7 +43,7 @@ public class TopicRestService extends CommonRest {
 			@PathVariable("status") int status) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", status);
-		VoteUtil.getMongo().update(Topic.C_NAME, _id, map);
+		VoteManager.getMongo().update(Topic.C_NAME, _id, map);
 		return NtpMessage.ok();
 	}
 
@@ -56,7 +57,7 @@ public class TopicRestService extends CommonRest {
 		String account = this.getOperator(req);
 		QueryAttrs query = QueryAttrs.blank().and("owner", account)
 				.desc("_tsi");
-		List<MongoItem> items = VoteUtil.findItems(Topic.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Topic.C_NAME, query);
 		String channelCode = "channel_mine_" + account;
 		return build(channelCode, items);
 	}
@@ -84,7 +85,7 @@ public class TopicRestService extends CommonRest {
 		// 查找MongoItem对象
 		String account = this.getOperator(req);
 		QueryAttrs query = QueryAttrs.blank().desc("_tsi").limit(100);
-		List<MongoItem> items = VoteUtil.findItems(Topic.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Topic.C_NAME, query);
 		String channelCode = "channel_admin_" + account;
 		return build(channelCode, items);
 	}
@@ -128,7 +129,7 @@ public class TopicRestService extends CommonRest {
 				legsMap.add(lm);
 			}
 			item.put("legs", legsMap);
-			VoteUtil.getMongo().insert(Topic.C_NAME, item);
+			VoteManager.getMongo().insert(Topic.C_NAME, item);
 			return NtpMessage.ok();
 		} catch (Exception e) {
 			return NtpMessage.error(e.getMessage());
@@ -151,7 +152,7 @@ public class TopicRestService extends CommonRest {
 		vote.setLegSeq(legSeq);
 		vote.setTopicId(topic_id);
 		// TODO 分表存储...
-		VoteUtil.getMongo().insert(Vote.C_NAME, ModelManager.toMap(vote));
+		VoteManager.getMongo().insert(Vote.C_NAME, ModelManager.toMap(vote));
 		return NtpMessage.ok();
 	}
 
@@ -173,7 +174,7 @@ public class TopicRestService extends CommonRest {
 			// 直接Map对象传递到数据库中
 			Map<String, Object> item = new HashMap<String, Object>();
 			item.put(key, value);
-			VoteUtil.getMongo().update(Topic.C_NAME, _id, item);
+			VoteManager.getMongo().update(Topic.C_NAME, _id, item);
 		} else {
 			resp = resp.head(NtpHead.PARAMETER_ERROR);
 		}
@@ -185,7 +186,7 @@ public class TopicRestService extends CommonRest {
 	 */
 	private NtpMessage findMcByChannelCode(String channelCode, String account) {
 		NtpMessage sm = NtpMessage.ok();
-		Object value = VoteUtil.getMC().getValue(channelCode);
+		Object value = VoteManager.getMC().getValue(channelCode);
 		// logger.debug("channel=" + channelKey + "\taccount=" + account);
 		if (value != null) {
 			@SuppressWarnings("unchecked")
@@ -195,7 +196,7 @@ public class TopicRestService extends CommonRest {
 				Topic topic = ModelManager.mi2Topic(mi);
 				// 参见VoteJob, account对此topic是否投過票
 				String mcKey = "vote." + account + "." + topic.get_id();
-				boolean exist = VoteUtil.isMcExist(mcKey);
+				boolean exist = VoteManager.isMcExist(mcKey);
 				if (exist) {
 					topic.setVoted(true);
 				}

@@ -10,15 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.coo.s.cloud.rest.GenericRest;
 import com.coo.s.vote.model.Channel;
 import com.coo.u.vote.ModelManager;
 import com.kingstar.ngbf.s.ntp.NtpMessage;
 
 @Controller
 @RequestMapping("/")
-public class VoteRestService {
+public class VoteRest extends GenericRest{
 
-	protected static Logger logger = Logger.getLogger(VoteRestService.class);
+	protected static Logger logger = Logger.getLogger(VoteRest.class);
 
 	/**
 	 * 获得所有的Channel静态对象,供M端的频道管理

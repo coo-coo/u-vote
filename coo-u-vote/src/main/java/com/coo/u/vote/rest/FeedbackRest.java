@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.coo.s.cloud.rest.GenericRest;
 import com.coo.s.vote.model.Feedback;
 import com.coo.u.vote.ModelManager;
-import com.coo.u.vote.VoteUtil;
+import com.coo.u.vote.VoteManager;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
 import com.kingstar.ngbf.s.ntp.NtpHead;
@@ -30,9 +31,9 @@ import com.kingstar.ngbf.s.ntp.NtpMessage;
  */
 @Controller
 @RequestMapping("/feedback")
-public class FeedbackRestService extends CommonRest {
+public class FeedbackRest extends GenericRest {
 
-	private static Logger logger = Logger.getLogger(FeedbackRestService.class);
+	private static Logger logger = Logger.getLogger(FeedbackRest.class);
 
 	/**
 	 * 创建/存储一个Feedback
@@ -49,7 +50,7 @@ public class FeedbackRestService extends CommonRest {
 		if (sm != null) {
 			// 直接Map对象传递到数据库中
 			sm.set("status", Feedback.STATUS_UNSOLVED);
-			VoteUtil.getMongo().insert(Feedback.C_NAME, sm.getData());
+			VoteManager.getMongo().insert(Feedback.C_NAME, sm.getData());
 		} else {
 			resp = resp.head(NtpHead.PARAMETER_ERROR);
 		}
@@ -72,7 +73,7 @@ public class FeedbackRestService extends CommonRest {
 			query.limit(latest);
 		}
 		// 查询获得列表，因为，数据较简单，直接从Mongo数据库中获得
-		List<MongoItem> items = VoteUtil.getMongo().findItems(Feedback.C_NAME,
+		List<MongoItem> items = VoteManager.getMongo().findItems(Feedback.C_NAME,
 				query);
 		for (MongoItem mi : items) {
 			Feedback fb = new Feedback();
@@ -95,7 +96,7 @@ public class FeedbackRestService extends CommonRest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", status);
 		map.put("updater", this.getOperator(req));
-		VoteUtil.getMongo().update(Feedback.C_NAME, _id, map);
+		VoteManager.getMongo().update(Feedback.C_NAME, _id, map);
 		return NtpMessage.ok();
 	}
 }

@@ -9,7 +9,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.coo.s.vote.model.Log;
-import com.coo.u.vote.VoteUtil;
+import com.coo.u.vote.VoteManager;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
 
@@ -48,7 +48,7 @@ public abstract class AbstractJob implements Job {
 		item.put("name", getName());
 		item.put("status", Log.STATUS_SUCCESS);
 		item.put("type", "JOB");
-		VoteUtil.getMongo().insert(Log.C_NAME, item);
+		VoteManager.getMongo().insert(Log.C_NAME, item);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public abstract class AbstractJob implements Job {
 	protected long getLastStartTs() {
 		QueryAttrs query = QueryAttrs.blank().add("name", getName())
 				.desc("_tsi");
-		MongoItem mi = VoteUtil.getMongo().findItemOne(Log.C_NAME, query);
+		MongoItem mi = VoteManager.getMongo().findItemOne(Log.C_NAME, query);
 		long ts = 0l;
 		if (mi != null) {
 			ts = (Long) mi.get("start_ts");

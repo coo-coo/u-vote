@@ -5,8 +5,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.coo.s.vote.model.Vote;
-import com.coo.u.vote.INameSpace;
-import com.coo.u.vote.VoteUtil;
+import com.coo.u.vote.VoteManager;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
 
@@ -34,13 +33,13 @@ public class VoteJob extends AbstractJob {
 	private void put2MC() {
 		// 获得所有条目
 		QueryAttrs query = QueryAttrs.blank().desc("_tsi");
-		List<MongoItem> items = VoteUtil.findItems(Vote.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Vote.C_NAME, query);
 		logger.debug("vote size=" + items.size());
 		for (MongoItem mi : items) {
 			String account = (String) mi.get("voter");
 			String topic_id = (String) mi.get("topic_id");
 			String mcKey = "vote." + account + "." + topic_id;
-			VoteUtil.getMC().put(mcKey, mi, INameSpace.HOUR1);
+			VoteManager.getMC().put(mcKey, mi, VoteManager.HOUR1);
 		}
 	}
 }

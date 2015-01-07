@@ -4,18 +4,15 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.kingstar.ngbf.s.asyn.AsynManager;
-import com.kingstar.ngbf.s.asyn.IOperation;
+import com.coo.s.cloud.CloudFactory;
 import com.kingstar.ngbf.s.cache.IRepository;
 import com.kingstar.ngbf.s.mongo.INgbfMongoClient;
-import com.kingstar.ngbf.s.mongo.LogItem;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.NgbfMongoClient;
 import com.kingstar.ngbf.s.mongo.NgbfMongoConfiguration;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
 import com.kingstar.ngbf.s.template.INgbfTemplateService;
 import com.kingstar.ngbf.s.template.NgbfTemplateServiceImpl;
-import com.kingstar.ngbf.u.base.UFactory;
 
 /**
  * 基础工具类
@@ -26,24 +23,32 @@ import com.kingstar.ngbf.u.base.UFactory;
  * @since 0.1.0.0
  */
 
-public final class VoteUtil {
-	public static Logger logger = Logger.getLogger(VoteUtil.class);
+public final class VoteManager {
+	public static Logger logger = Logger.getLogger(VoteManager.class);
 
-	private static INgbfMongoClient mongoClient;
-	
+	public static String FORMAT_YYYYMM = "yyyyMM";
+	public static String FORMAT_YYYY = "yyyy";
+
+	public final static int MIN1 = 60 * 1;
+	public final static int HOUR1 = MIN1 * 60;
+	public final static int DAY1 = HOUR1 * 24;
+
+	// private static INgbfMongoClient mongoClient;
+
 	private static INgbfTemplateService templateService;
-	
+
 	/**
 	 * 获得模板服务
+	 * 
 	 * @return
 	 */
 	public static INgbfTemplateService getTemplateService() {
-		if(templateService==null){
+		if (templateService == null) {
 			templateService = new NgbfTemplateServiceImpl();
 		}
 		return templateService;
 	}
-	
+
 	/**
 	 * TODO 获得MC中的各对象的名称....
 	 */
@@ -65,24 +70,6 @@ public final class VoteUtil {
 	}
 
 	/**
-	 * 获得Mongo客户端
-	 */
-	public static INgbfMongoClient getMongo() {
-		if (mongoClient == null) {
-			// mongoClient = MongoUtil.getClient();
-			mongoClient = getMockMongo();
-		}
-		return mongoClient;
-	}
-
-	/**
-	 * 获得Memcached客户端
-	 */
-	public static IRepository getMC() {
-		return UFactory.getXmemcachedRepository();
-	}
-
-	/**
 	 * 判定MC是否存在指定的KEY
 	 */
 	public static boolean isMcExist(String mcKey) {
@@ -94,23 +81,22 @@ public final class VoteUtil {
 		return tof;
 	}
 
+	// //////////////////////////////////////////////
+	// //////////////////////////////////////////////
+	// //////////////////////////////////////////////
+
 	/**
-	 * 添加一个Log 业务/系统日志记录器,各业务类调用,旨在收集/发布系统产生的各日志
-	 * 
-	 * @since 0.1.5.0
+	 * 获得Mongo客户端
 	 */
-	public static void addLog(LogItem log) {
-		// 暂时现已异步的形式进行存储,存储到MongoDB中
-		// TODO 分布式存储
-		addOperation(new LogSaveOperation(log));
+	public static INgbfMongoClient getMongo() {
+		return CloudFactory.getMongo();
 	}
 
 	/**
-	 * 添加异步操作实现,暂时替代队列实现
-	 * 
-	 * @deprecated
+	 * 获得Memcached客户端
 	 */
-	public static void addOperation(IOperation operation) {
-		AsynManager.getInstance().put(operation);
+	public static IRepository getMC() {
+		return CloudFactory.getMC();
 	}
+
 }

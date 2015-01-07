@@ -5,8 +5,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.coo.s.vote.model.Topic;
-import com.coo.u.vote.INameSpace;
-import com.coo.u.vote.VoteUtil;
+import com.coo.u.vote.VoteManager;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
 
@@ -39,12 +38,12 @@ public class TopicJob extends AbstractJob {
 	private void put2MC() {
 		// 获得所有符合条件的条目
 		QueryAttrs query = QueryAttrs.blank().add("status", Topic.STATUS_VALID);
-		List<MongoItem> items = VoteUtil.findItems(Topic.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Topic.C_NAME, query);
 
 		logger.debug("topic size=" + items.size());
 		for (MongoItem mi : items) {
 			String mcKey = "topic." + mi.get_id();
-			VoteUtil.getMC().put(mcKey, mi, INameSpace.MIN1 * 60);
+			VoteManager.getMC().put(mcKey, mi, VoteManager.MIN1 * 60);
 		}
 	}
 }

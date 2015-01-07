@@ -15,4 +15,7 @@
 	<items author="SBQ" since="0.7.0.0" update="2014-10-30">
 		<item desc="合并s-vote/u-vote-topic/u-vote-robort" source="NGBF" />
 	</items>
+	<items author="SBQ" since="0.8.0.0" update="2015-01-07">
+		<item desc="针对s-cloud进行代码重构,暂不再支持d-vote(需要虚拟机)概念" source="NGBF" />
+	</items>
 </ngbf>

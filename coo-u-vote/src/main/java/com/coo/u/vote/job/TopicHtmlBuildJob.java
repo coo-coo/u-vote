@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.coo.s.vote.model.Topic;
 import com.coo.u.vote.ModelManager;
-import com.coo.u.vote.VoteUtil;
+import com.coo.u.vote.VoteManager;
 import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
 import com.kingstar.ngbf.s.util.SystemUtil;
@@ -25,7 +25,7 @@ public class TopicHtmlBuildJob extends AbstractJob {
 		// TODO 已创建的Topic,不再创建...
 		// 获得所有符合条件的条目 0:未被build;1:已生成
 		QueryAttrs query = QueryAttrs.blank();// .add("builded", "0");
-		List<MongoItem> items = VoteUtil.findItems(Topic.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Topic.C_NAME, query);
 		for (MongoItem mi : items) {
 			Topic topic = ModelManager.mi2Topic(mi);
 			generateHtmlFile(topic);
@@ -46,7 +46,7 @@ public class TopicHtmlBuildJob extends AbstractJob {
 		// "C:\\develop\\eclipse_git_workspace\\repo-d-vote\\coo-d-vote\\target\\coo-d-vote-0.7.0.0-bin\\web\\topic\\";
 		String fileName = templateDir + "t_" + topic.get_id() + ".html";
 		// 通过模板生成文件..
-		VoteUtil.getTemplateService().create(template, map, templateDir,
+		VoteManager.getTemplateService().create(template, map, templateDir,
 				fileName);
 	}
 

@@ -16,6 +16,7 @@ import com.kingstar.ngbf.s.util.SystemUtil;
 
 /**
  * 根据模板,生成静态的Topic页面
+ * @deprecated 考虑动态页面实现.....对象进缓存...
  */
 public class TopicHtmlBuildJob extends GenericCloudJob {
 
@@ -26,7 +27,7 @@ public class TopicHtmlBuildJob extends GenericCloudJob {
 		// TODO 已创建的Topic,不再创建...
 		// 获得所有符合条件的条目 0:未被build;1:已生成
 		QueryAttrs query = QueryAttrs.blank();// .add("builded", "0");
-		List<MongoItem> items = VoteManager.findItems(Topic.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Topic.SET, query);
 		for (MongoItem mi : items) {
 			Topic topic = ModelManager.mi2Topic(mi);
 			generateHtmlFile(topic);

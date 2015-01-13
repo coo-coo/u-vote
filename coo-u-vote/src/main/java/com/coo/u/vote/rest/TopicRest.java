@@ -29,7 +29,7 @@ import com.kingstar.ngbf.s.ntp.NtpMessage;
  * @description
  */
 @Controller
-@RequestMapping("/topic")
+@RequestMapping("/vote/topic")
 public class TopicRest extends GenericCloudRest {
 
 	// private static Logger logger = Logger.getLogger(TopicRestService.class);
@@ -43,7 +43,7 @@ public class TopicRest extends GenericCloudRest {
 			@PathVariable("status") int status) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", status);
-		VoteManager.getMongo().update(Topic.C_NAME, _id, map);
+		VoteManager.getMongo().update(Topic.SET, _id, map);
 		return NtpMessage.ok();
 	}
 
@@ -57,7 +57,7 @@ public class TopicRest extends GenericCloudRest {
 		String account = this.getOperator(req);
 		QueryAttrs query = QueryAttrs.blank().and("owner", account)
 				.desc("_tsi");
-		List<MongoItem> items = VoteManager.findItems(Topic.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Topic.SET, query);
 		String channelCode = "channel_mine_" + account;
 		return build(channelCode, items);
 	}
@@ -85,7 +85,7 @@ public class TopicRest extends GenericCloudRest {
 		// 查找MongoItem对象
 		String account = this.getOperator(req);
 		QueryAttrs query = QueryAttrs.blank().desc("_tsi").limit(100);
-		List<MongoItem> items = VoteManager.findItems(Topic.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Topic.SET, query);
 		String channelCode = "channel_admin_" + account;
 		return build(channelCode, items);
 	}
@@ -129,7 +129,7 @@ public class TopicRest extends GenericCloudRest {
 				legsMap.add(lm);
 			}
 			item.put("legs", legsMap);
-			VoteManager.getMongo().insert(Topic.C_NAME, item);
+			VoteManager.getMongo().insert(Topic.SET, item);
 			return NtpMessage.ok();
 		} catch (Exception e) {
 			return NtpMessage.error(e.getMessage());
@@ -152,7 +152,7 @@ public class TopicRest extends GenericCloudRest {
 		vote.setLegSeq(legSeq);
 		vote.setTopicId(topic_id);
 		// TODO 分表存储...
-		VoteManager.getMongo().insert(Vote.C_NAME, ModelManager.toMap(vote));
+		VoteManager.getMongo().insert(Vote.SET, ModelManager.toMap(vote));
 		return NtpMessage.ok();
 	}
 
@@ -174,7 +174,7 @@ public class TopicRest extends GenericCloudRest {
 			// 直接Map对象传递到数据库中
 			Map<String, Object> item = new HashMap<String, Object>();
 			item.put(key, value);
-			VoteManager.getMongo().update(Topic.C_NAME, _id, item);
+			VoteManager.getMongo().update(Topic.SET, _id, item);
 		} else {
 			resp = resp.head(NtpHead.PARAMETER_ERROR);
 		}

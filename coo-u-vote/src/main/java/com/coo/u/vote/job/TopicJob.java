@@ -39,7 +39,7 @@ public class TopicJob extends GenericCloudJob {
 	private void put2MC() {
 		// 获得所有符合条件的条目
 		QueryAttrs query = QueryAttrs.blank().add("status", Topic.STATUS_VALID);
-		List<MongoItem> items = VoteManager.findItems(Topic.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Topic.SET, query);
 
 		logger.debug("topic size=" + items.size());
 		for (MongoItem mi : items) {

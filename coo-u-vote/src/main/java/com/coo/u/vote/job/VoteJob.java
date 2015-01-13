@@ -34,7 +34,7 @@ public class VoteJob extends GenericCloudJob {
 	private void put2MC() {
 		// 获得所有条目
 		QueryAttrs query = QueryAttrs.blank().desc("_tsi");
-		List<MongoItem> items = VoteManager.findItems(Vote.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Vote.SET, query);
 		logger.debug("vote size=" + items.size());
 		for (MongoItem mi : items) {
 			String account = (String) mi.get("voter");

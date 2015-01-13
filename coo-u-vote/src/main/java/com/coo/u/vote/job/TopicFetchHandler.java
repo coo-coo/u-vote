@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.coo.s.vote.model.Focus;
+import com.coo.s.cloud.model.Focus;
 import com.coo.s.vote.model.Topic;
 import com.coo.u.vote.ModelManager;
 import com.coo.u.vote.VoteManager;
@@ -38,7 +38,7 @@ public class TopicFetchHandler {
 		// 查找结果集
 		QueryAttrs query = QueryAttrs.blank().add("type", Focus.TYPE_TOPIC)
 				.add("status", Focus.STATUS_VALID);
-		List<MongoItem> items = VoteManager.findItems(Focus.C_NAME, query);
+		List<MongoItem> items = VoteManager.findItems(Focus.SET, query);
 
 		// 定义分发队列
 		Map<String, List<MongoItem>> channels = new HashMap<String, List<MongoItem>>();
@@ -48,7 +48,7 @@ public class TopicFetchHandler {
 		for (MongoItem mi : items) {
 			// 定义Focus对象,初始化
 			Focus focus = new Focus();
-			ModelManager.merge(mi, focus);
+			focus.merge(mi);
 			// 超过周期时间的DELTA_TS(MS)内，该Topic需要进行推送 period(天)
 			// int period = focus.getPeriod();
 			// TODO 暂定为0天,即关注(DELTA_TS)小时之内的
@@ -90,7 +90,7 @@ public class TopicFetchHandler {
 	public void fetchLatest(int limit) {
 		// 查找MongoItem对象
 		QueryAttrs query = QueryAttrs.blank().desc("_tsi").limit(limit);
-		List<MongoItem> items = VoteManager.getMongo().findItems(Topic.C_NAME,
+		List<MongoItem> items = VoteManager.getMongo().findItems(Topic.SET,
 				query);
 		VoteManager.getMC().put("channel_latest", items, Integer.MAX_VALUE);
 	}
@@ -101,7 +101,7 @@ public class TopicFetchHandler {
 	@Async
 	public void fetchTop(int limit) {
 		QueryAttrs query = QueryAttrs.blank().desc("vote").limit(limit);
-		List<MongoItem> items = VoteManager.getMongo().findItems(Topic.C_NAME,
+		List<MongoItem> items = VoteManager.getMongo().findItems(Topic.SET,
 				query);
 //		logger.debug("fetchTop MongoItem size:" + items.size());
 		VoteManager.getMC().put("channel_top", items, Integer.MAX_VALUE);
@@ -118,7 +118,7 @@ public class TopicFetchHandler {
 		// TODO 暂时获得1000条,也可以是全部?
 		QueryAttrs query = QueryAttrs.blank().desc("_tsu").limit(limit);
 		// 获得条目
-		List<MongoItem> items = VoteManager.getMongo().findItems(Topic.C_NAME,
+		List<MongoItem> items = VoteManager.getMongo().findItems(Topic.SET,
 				query);
 
 		// 定義TypeChannels

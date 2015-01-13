@@ -16,8 +16,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.coo</groupId>
-			<artifactId>coo-s-vote-model</artifactId>
-			<version>0.7.3.0</version>
+			<artifactId>coo-s-vote</artifactId>
+			<version>0.8.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -32,10 +32,11 @@
 		<dependency>
 			<groupId>com.kingstar.ngbf</groupId>
 			<artifactId>ngbf-s-ntp</artifactId>
-			<version>2.4.1.0</version>
+			<version>2.4.2.0</version>
+			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>com.kingstar.ngbf</groupId>
 			<artifactId>ngbf-s-quartz</artifactId>
@@ -49,14 +50,14 @@
 			<version>2.4.0.0</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.kingstar.ngbf</groupId>
 			<artifactId>ngbf-s-cache</artifactId>
 			<version>2.4.0.0</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.kingstar.ngbf</groupId>
 			<artifactId>ngbf-s-util</artifactId>

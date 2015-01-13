@@ -8,9 +8,9 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
-import com.coo.s.vote.model.BasicObject;
+import com.coo.s.cloud.model.BasicObject;
+import com.coo.s.cloud.model.Column;
 import com.coo.s.vote.model.Channel;
-import com.coo.s.vote.model.Column;
 import com.coo.s.vote.model.Topic;
 import com.coo.s.vote.model.TopicLeg;
 import com.kingstar.ngbf.s.mongo.MongoItem;
@@ -37,8 +37,7 @@ public class ModelManager {
 	}
 
 	/**
-	 * 将指定的BasicObject根据@Column注解,生成简单的Map对象 
-	 * 用于将对象生成到MongoItem中 进队有注解的字段进行实现
+	 * 将指定的BasicObject根据@Column注解,生成简单的Map对象 用于将对象生成到MongoItem中 进队有注解的字段进行实现
 	 * M端发送对象回来,Server端进行转换[方向:M->S]
 	 */
 	public static Map<String, Object> toMap(BasicObject bo) {
@@ -66,7 +65,7 @@ public class ModelManager {
 			}
 		}
 		// 放置其它全部属性
-//		item.putAll(bo.getAttrs());
+		// item.putAll(bo.getAttrs());
 		return item;
 	}
 
@@ -97,8 +96,7 @@ public class ModelManager {
 	}
 
 	/**
-	 * 将MongoItem对象转换成为Topic对象，传递到M端
-	 * [方向:S->M]
+	 * 将MongoItem对象转换成为Topic对象，传递到M端 [方向:S->M]
 	 */
 	@SuppressWarnings("unchecked")
 	public static Topic mi2Topic(MongoItem mi) {

@@ -35,7 +35,7 @@ public class TopicShotJob extends GenericCloudJob {
 
 		// 查询获得未被统计(status=="0")的Vote
 		QueryAttrs query = QueryAttrs.blank().add("status", 0);
-		List<MongoItem> items = MongoUtil.getClient().findItems(Vote.C_NAME,
+		List<MongoItem> items = MongoUtil.getClient().findItems(Vote.SET,
 				query);
 		logger.debug("vote count=" + items.size());
 		// 获得新的未统计过的投票数
@@ -63,7 +63,7 @@ public class TopicShotJob extends GenericCloudJob {
 				VoteCount vc = it.next();
 				String topicId = vc.getTopicId();
 				// 获得Topic对象,准备更新
-				MongoItem mi = MongoUtil.getClient().getItem(Topic.C_NAME,
+				MongoItem mi = MongoUtil.getClient().getItem(Topic.SET,
 						topicId);
 
 				if (mi != null) {
@@ -96,7 +96,7 @@ public class TopicShotJob extends GenericCloudJob {
 					// 设置快照时间戳
 					update.put("snapshot", snapshot);
 					// 更新Topic数据,实现快照
-					MongoUtil.getClient().update(Topic.C_NAME, topicId, update);
+					MongoUtil.getClient().update(Topic.SET, topicId, update);
 				}
 			}
 
@@ -105,7 +105,7 @@ public class TopicShotJob extends GenericCloudJob {
 				Map<String, Object> item = new HashMap<String, Object>();
 				// 设置Vote已统计
 				item.put("status", Vote.STATUS_COUNTED);
-				MongoUtil.getClient().update(Vote.C_NAME, vote.get_id(), item);
+				MongoUtil.getClient().update(Vote.SET, vote.get_id(), item);
 			}
 
 		}

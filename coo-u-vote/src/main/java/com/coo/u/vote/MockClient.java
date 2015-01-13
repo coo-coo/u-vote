@@ -3,18 +3,13 @@ package com.coo.u.vote;
 import java.util.List;
 
 import com.coo.s.cloud.HttpUtils;
-import com.coo.s.vote.model.Account;
-import com.coo.s.vote.model.Feedback;
-import com.coo.s.vote.model.SChannel;
-import com.coo.s.vote.model.SContact;
+import com.coo.s.cloud.model.Account;
+import com.coo.s.cloud.model.Feedback;
 import com.coo.s.vote.model.Topic;
 import com.coo.s.vote.model.TopicLeg;
-import com.coo.u.vote.job.TopicHtmlBuildJob;
 import com.google.gson.Gson;
-import com.kingstar.ngbf.s.mongo.MongoItem;
 import com.kingstar.ngbf.s.mongo.QueryAttrs;
 import com.kingstar.ngbf.s.ntp.NtpHead;
-import com.kingstar.ngbf.s.ntp.NtpHelper;
 import com.kingstar.ngbf.s.ntp.NtpMessage;
 
 /**
@@ -41,22 +36,14 @@ public class MockClient {
 		// MockClient.mcontactSync();
 		// MockClient.mchannelFind();
 		// MockClient.topicHtmlBuild();
-		String s1 = null;
-		boolean tof = s1 == null ? true : false;
-		System.out.println(tof);
-	}
-
-	public static void topicHtmlBuild() {
-		TopicHtmlBuildJob job = new TopicHtmlBuildJob();
-		job.execute();
 	}
 
 	public static void mchannelFind() {
 		String host = "13917081673";
 		// 查找到所有相關的MContact信息,和M端传来的信息进行同步
 		QueryAttrs query = QueryAttrs.blank().add("host", host);
-		List<MongoItem> list = VoteManager.findItems(SContact.C_NAME, query);
-		System.out.println(list.size());
+		// List<MongoItem> list = VoteManager.findItems(SContact.C_NAME, query);
+		// System.out.println(list.size());
 		// for (MongoItem mi : list) {
 		//
 		// }
@@ -67,17 +54,17 @@ public class MockClient {
 	 */
 	public static void mcontactSync() {
 		// M端基础数据，即所有SQLite的MContact部分信息
-		NtpMessage data = new NtpMessage();
+		NtpMessage data = NtpMessage.ok();
 		// 设置请求者
 		data.set("host", ACCOUNT);
 		for (int i = 0; i < 8; i++) {
 			// 参见MContact
-			SChannel item = new SChannel();
-			item.setHost(ACCOUNT);
-			item.setCode("code-" + i);
-			item.setLabel("频道241-" + i);
-			item.setId("" + i);
-			data.add(item);
+			// SChannel item = new SChannel();
+			// item.setHost(ACCOUNT);
+			// item.setCode("code-" + i);
+			// item.setLabel("频道241-" + i);
+			// item.setId("" + i);
+			// data.add(item);
 		}
 
 		String uri = SERVERHOST + "/mchannel/sync";
@@ -101,7 +88,7 @@ public class MockClient {
 	}
 
 	public static void createTopic2(String title, int legCount) {
-		NtpMessage nm = new NtpMessage();
+		NtpMessage nm = NtpMessage.ok();
 		nm.set("title", title);
 		nm.set("owner", "13917081673");
 		// nm.set("expired", 0l);
@@ -157,7 +144,7 @@ public class MockClient {
 			topic.add(leg);
 		}
 		// // 提示信息... toJson有问题?
-		String json = NtpHelper.toJson(topic);
+		// String json = NtpHelper.toJson(topic);
 
 		// toast(json);
 		// String uri = SERVERHOST + "/topic/create";
@@ -180,7 +167,7 @@ public class MockClient {
 	}
 
 	public static void updateAccountParam() {
-		NtpMessage nm = new NtpMessage();
+		NtpMessage nm = NtpMessage.ok();
 		nm.set("_id", "541155452170e0df13091431");
 		nm.set("key", "mail");
 		nm.set("value", "sbq@163.com");
@@ -243,15 +230,15 @@ public class MockClient {
 		NtpMessage sm = new NtpMessage(NtpHead.OK);
 		QueryAttrs query = QueryAttrs.blank().desc("_tsi");
 		// 查询获得列表，因为，数据较简单，直接从Mongo数据库中获得
-		List<MongoItem> items = VoteManager.getMockMongo().findItems(
-				Feedback.C_NAME, query);
-		for (MongoItem mi : items) {
-			Feedback fb = new Feedback();
-			// 不能用MongoItem.toMap()到M端,可能会产生Integer到Double的默认转换(GSON的问题)
-			// 先转换成对象，再传递
-			ModelManager.merge(mi, fb);
-			sm.add(fb);
-		}
+		// List<MongoItem> items = VoteManager.getMockMongo().findItems(
+		// Feedback.C_NAME, query);
+		// for (MongoItem mi : items) {
+		// Feedback fb = new Feedback();
+		// // 不能用MongoItem.toMap()到M端,可能会产生Integer到Double的默认转换(GSON的问题)
+		// // 先转换成对象，再传递
+		// ModelManager.merge(mi, fb);
+		// sm.add(fb);
+		// }
 		String json = sm.toJson();
 		System.out.println(json);
 		NtpMessage resp = NtpMessage.bind(json);
@@ -267,7 +254,7 @@ public class MockClient {
 	 * 创建话题
 	 */
 	public static void createFeedback(String note) {
-		NtpMessage sm = new NtpMessage();
+		NtpMessage sm = NtpMessage.ok();
 		sm.set("owner", "13917081673");
 		sm.set("owner_id", "mongoid...");
 		sm.set("note", note);
@@ -281,7 +268,7 @@ public class MockClient {
 
 	public static void profileUpdate() {
 		// M端基础数据，即所有SQLite的MContact部分信息
-		NtpMessage data = new NtpMessage();
+		NtpMessage data = NtpMessage.ok();
 		// 设置请求者
 		data.set("_id", "541155452170e0df13091431");
 		// data.set("key", "p_nickname");
@@ -316,7 +303,7 @@ public class MockClient {
 	}
 
 	private static boolean isRespOK(NtpMessage resp) {
-		boolean tof = resp.getHead().getRep_code().equals(NtpHead.REP_OK);
+		boolean tof = resp.getHead().getCode().equals(NtpHead.REP_OK);
 		return tof;
 	}
 

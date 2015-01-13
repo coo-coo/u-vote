@@ -16,8 +16,8 @@ import com.coo.u.vote.ModelManager;
 import com.kingstar.ngbf.s.ntp.NtpMessage;
 
 @Controller
-@RequestMapping("/")
-public class VoteRest extends GenericCloudRest{
+@RequestMapping("/vote")
+public class VoteRest extends GenericCloudRest {
 
 	protected static Logger logger = Logger.getLogger(VoteRest.class);
 

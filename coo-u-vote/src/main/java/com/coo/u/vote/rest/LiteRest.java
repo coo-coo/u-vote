@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.coo.s.cloud.model.Contact;
+import com.coo.s.cloud.model.Group;
 import com.coo.s.cloud.rest.GenericCloudRest;
-import com.coo.s.vote.model.MModel;
-import com.coo.s.vote.model.SChannel;
+import com.coo.s.vote.model.Channel;
 import com.coo.u.vote.ModelManager;
 import com.coo.u.vote.VoteManager;
 import com.kingstar.ngbf.s.mongo.MongoItem;
@@ -35,7 +36,7 @@ import com.kingstar.ngbf.s.ntp.NtpMessage;
 public class LiteRest extends GenericCloudRest {
 
 	// @SuppressWarnings("unused")
-	 private Logger logger = Logger.getLogger(LiteRest.class);
+	private Logger logger = Logger.getLogger(LiteRest.class);
 
 	/**
 	 * 同步M端的MContact信息,即从M端Post过来列表MContact信息 NtpMessage add(Map<String,Object>)
@@ -50,7 +51,7 @@ public class LiteRest extends GenericCloudRest {
 			return error("请求数据有误");
 		}
 		// 同步到LiteChannel存储中
-		sync(MModel.C_MCONTACT_NAME, sm, "mobile");
+		sync(Contact.SET, sm, "mobile");
 		return NtpMessage.ok();
 	}
 
@@ -62,7 +63,7 @@ public class LiteRest extends GenericCloudRest {
 	public NtpMessage mcontactAll(HttpServletRequest req) {
 		String host = this.getOperator(req);
 		NtpMessage resp = NtpMessage.ok();
-		merge(resp, MModel.C_MCONTACT_NAME, host);
+		merge(resp, Contact.SET, host);
 		return resp;
 	}
 
@@ -74,7 +75,7 @@ public class LiteRest extends GenericCloudRest {
 	public NtpMessage mchannelAll(HttpServletRequest req) {
 		String host = this.getOperator(req);
 		NtpMessage resp = NtpMessage.ok();
-		merge(resp, MModel.C_MCHANNEL_NAME, host);
+		merge(resp, Channel.SET, host);
 		return resp;
 	}
 
@@ -86,7 +87,7 @@ public class LiteRest extends GenericCloudRest {
 	public NtpMessage mgroupAll(HttpServletRequest req) {
 		String host = this.getOperator(req);
 		NtpMessage resp = NtpMessage.ok();
-		merge(resp, MModel.C_MGROUP_NAME, host);
+		merge(resp, Group.SET, host);
 		return resp;
 	}
 
@@ -101,10 +102,10 @@ public class LiteRest extends GenericCloudRest {
 			NtpMessage nm = NtpMessage.bind(data);
 			logger.debug(nm.toJson());
 			// 同步到LiteChannel存储中
-			syncChannel(SChannel.C_NAME, nm, "code");
+			syncChannel(Channel.SET, nm, "code");
 			return NtpMessage.ok();
 		} catch (Exception e) {
-//			e.printStackTrace();
+			// e.printStackTrace();
 			logger.debug(e.getMessage());
 			return error(e.getMessage());
 		}
@@ -129,11 +130,11 @@ public class LiteRest extends GenericCloudRest {
 		}
 
 		// 获得M端的信息,参见MockClient.contactSync()
-		
+
 		// TODO
-		List<SChannel> items = nm.getItems(SChannel.class);
+		List<Channel> items = nm.getItems(Channel.class);
 		System.out.println("SChannel size==" + items.size());
-		for (SChannel item : items) {
+		for (Channel item : items) {
 			// 将Map对象Merge到mi中，然后进行更新
 			String key = item.getCode();
 			MongoItem mi = map.get(key);
@@ -167,7 +168,7 @@ public class LiteRest extends GenericCloudRest {
 			return error("请求数据有误");
 		}
 		// 同步到LiteChannel存储中
-		sync(MModel.C_MGROUP_NAME, smData, "name");
+		sync(Group.SET, smData, "name");
 		return NtpMessage.ok();
 	}
 
@@ -222,8 +223,7 @@ public class LiteRest extends GenericCloudRest {
 	 * TODO STP更新
 	 */
 	public static NtpMessage error(String errorMsg) {
-		return NtpMessage.blank()
-				.head(NtpHead.SERVICE_ERROR.repMsg(errorMsg));
+		return NtpMessage.blank().head(NtpHead.SERVICE_ERROR.msg(errorMsg));
 	}
 
 }

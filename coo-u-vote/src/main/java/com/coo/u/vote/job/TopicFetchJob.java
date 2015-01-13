@@ -9,9 +9,8 @@ import com.kingstar.ngbf.s.util.SpringContextFactory;
  * 获取最新,投票数最多，customer关注的channel等数据 JOB,由scheduleHook吊起,没有进入Spring环境
  * Topic和数据获取者的投票关系，还没有确定，需要在REST层进行
  * 
- * @author guoliang.li
- * @date 2014-6-4 下午3:13:14
- * @since 0.1.0.0
+ * @author boqing.shen
+ * @since 1.0.0.0
  */
 public class TopicFetchJob extends GenericCloudJob {
 
